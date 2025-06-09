@@ -1,8 +1,8 @@
 <template>
   <!--导航-->
 
-  <Head :navActive="navActive" @clickNav="clickNav" />
-  <example-list v-show="!showIframe" @jump="jumpUrl"></example-list>
+<!--  <Head :navActive="navActive" @clickNav="clickNav" />-->
+<!--  <example-list v-show="!showIframe" @jump="jumpUrl"></example-list>-->
   <iframe v-show="showIframe" style="width: 100%; height: 100vh; overflow: auto; margin-top: 68px" frameborder="0"
     :src="iframeSrc"></iframe>
 </template>
@@ -32,6 +32,27 @@ const jumpUrl = (item: any) => {
   window.open(url, "_blank")
 }
 
+const loadSceneInIframe = () => {
+  let url = process.env.BASE_URL
+  if (process.env.EDITOR_MODE) {
+    url += "editor-vue.html"
+  } else {
+    url += "read-vue.html"
+  }
+
+  // 处理参数
+  const sceneItem = {
+    id: "map-options-scene",
+    main: "map/options/scene"
+  }
+  url += `?key=${sceneItem.id}&id=` + encodeURI(sceneItem.main)
+
+  // 设置iframe的src并显示iframe
+  iframeSrc.value = url
+  showIframe.value = true
+  navActive.value = 1
+}
+
 const clickNav = (url) => {
   if (url) {
     showIframe.value = true
@@ -42,6 +63,11 @@ const clickNav = (url) => {
     showIframe.value = false
   }
 }
+
+// 在组件挂载后自动加载scene示例页面到iframe中
+onMounted(() => {
+  loadSceneInIframe()
+})
 </script>
 
 <style lang="less">
